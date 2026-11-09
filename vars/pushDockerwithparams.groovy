@@ -1,0 +1,32 @@
+
+def call(String localImage, String remoteRepo, String credentialsId, String imageTag) {
+
+    withCredentials([
+        usernamePassword(
+            credentialsId: credentialsId,
+            usernameVariable: 'DOCKERHUB_USER',
+            passwordVariable: 'DOCKERHUB_PASS'
+        )
+    ]) {
+        withEnv([
+            "LOCAL_IMAGE=${localImage}",
+            "REMOTE_REPO=${remoteRepo}",
+            "IMAGE_TAG=${imageTag}"
+        ]) {
+            sh '''
+                set +x
+
+                printf '%s' "$DOCKERHUB_PASS" | docker login \
+                    --username "$DOCKERHUB_USER" \
+                    --password-stdin
+
+                docker tag "$LOCAL_IMAGE" \
+                    "$DOCKERHUB_USER/$REMOTE_REPO:$IMAGE_TAG"
+
+                docker push "$DOCKERHUB_USER/$REMOTE_REPO:$IMAGE_TAG"
+
+                docker logout
+            '''
+        }
+    }
+}
