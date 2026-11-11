@@ -16,7 +16,7 @@ def call(String imageTag, String previousTag) {
                     echo 'Waiting for application startup...'
                     sleep 15
 
-                    if curl -fsS http://localhost:3000/invalid-endpoint-health; then
+                    if curl -fsS http://localhost:3000/health; then
                         echo 'Health check passed. Deployment successful.'
                     else
                         echo 'Health check failed! Starting rollback...'
